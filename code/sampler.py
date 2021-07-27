@@ -63,7 +63,7 @@ class CircleSampler(object):
         self.circle.set_r(radius)
 
 
-    def sample(self, m=4000, n=1000, var=(0.0025, 0.00025)):
+    def sample(self, m=4000, n=1000, var=(0.025, 0.0025)):
         """
         :param m: number of points sampled on the boundary
                   each boundary point generates 2 samples
@@ -77,15 +77,16 @@ class CircleSampler(object):
         uniform_points = np.concatenate((x, y), axis=1)
 
         # Do Gaussian sampling
-        t = np.random.uniform(0, 2 * np.pi, size=(n, 1))
-        direction = np.concatenate((self.circle.r * np.cos(t), self.circle.r * np.sin(t)), axis=1)
-        boundary_points = self.circle.c + direction
+        t = np.random.uniform(0, 2 * np.pi, size=(m, 1))
+        direction = np.concatenate((np.cos(t) * self.circle.r, np.sin(t) * self.circle.r), axis=1)
+        boundary_points = direction + self.circle.c
+        print(boundary_points, flush=True)
 
         # Perturbing boundary points
-        noise_1 = np.random.normal(loc=0, scale=np.sqrt(var[0]), size=boundary_points.shape)
-        noise_2 = np.random.normal(loc=0, scale=np.sqrt(var[1]), size=boundary_points.shape)
-        gaussian_points = np.concatenate((boundary_points + noise_1, boundary_points + noise_2), axis=0)
-
+        noise_1 = np.random.normal(loc=0, scale=np.sqrt(var[0]), size = (boundary_points.shape[0],1))
+        noise_2 = np.random.normal(loc=0, scale=np.sqrt(var[1]), size = (boundary_points.shape[0],1))
+        gaussian_points = np.concatenate((boundary_points + direction * noise_1, boundary_points + direction * noise_2), axis=0)
+        print(gaussian_points, flush=True)
         # Merge uniform and Gaussian points
         sampled_points = np.concatenate((uniform_points, gaussian_points), axis=0)
         self.sampled_data = self.calculate_sdf(sampled_points)
