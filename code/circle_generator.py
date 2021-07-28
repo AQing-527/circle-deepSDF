@@ -44,7 +44,7 @@ class DataSaver(object):
         self.y = y
         self.radius = radius
         self.image = image
-        self.data_path = 'shapes/'
+        self.data_path = 'shapes/shape/'
         self.image_path = 'shapes/shape_images/'
         self.save_name = f'circle_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())}'
 

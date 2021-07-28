@@ -1,60 +1,27 @@
 import os
+import time
 import torch
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 
 from net import SDFNet
 from loader import SDFData
 from renderer import plot_sdf
 
-TRAIN_DATA_PATH = '../datasets/train/'
-VAL_DATA_PATH = '../datasets/val/'
-MODEL_PATH = '../models/'
-RES_PATH = '../results/trained_heatmaps/'
-
-# See https://github.com/mintpancake/2d-sdf-net
-
-
-def train_loop(dataloader, model, loss_fn, optimizer, device, theta=0.1):
-    model.train()
-    size = len(dataloader.dataset)
-    for batch, (xy, sdf) in enumerate(dataloader):
-        xy, sdf = xy.to(device), sdf.to(device)
-        pred_sdf = model(xy)
-        sdf = torch.reshape(sdf, pred_sdf.shape)
-        loss = loss_fn(torch.clamp(pred_sdf, min=-theta, max=theta), torch.clamp(sdf, min=-theta, max=theta))
-
-        loss.backward()
-        optimizer.step()
-        optimizer.zero_grad()
-
-        if batch % 50 == 0:
-            loss, current = loss.item(), batch * len(xy)
-            print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
-
-
-def val_loop(dataloader, model, loss_fn, device, theta=0.1):
-    model.eval()
-    size = len(dataloader.dataset)
-    test_loss = 0
-
-    with torch.no_grad():
-        for xy, sdf in dataloader:
-            xy, sdf = xy.to(device), sdf.to(device)
-            pred_sdf = model(xy)
-            sdf = torch.reshape(sdf, pred_sdf.shape)
-            loss = loss_fn(torch.clamp(pred_sdf, min=-theta, max=theta), torch.clamp(sdf, min=-theta, max=theta))
-            test_loss += loss
-
-    test_loss /= size
-    print(f'Test Error: \n Avg loss: {test_loss:>8f} \n')
-
+TRAIN_DATA_PATH = 'datasets/train/'
+VAL_DATA_PATH = 'datasets/val/'
+MODEL_PATH = 'models/'
+RES_PATH = 'results/trained_heatmaps/'
+SHAPE_PATH = 'shapes/shape_images/'
+LOG_PATH = 'logs/'
 
 if __name__ == '__main__':
     batch_size = 64
     learning_rate = 1e-5
     epochs = 1000
     regularization = 0  # Default: 1e-2
+    delta = 0.1  # Truncated distance
 
     print('Enter shape name:')
     name = input()
@@ -75,14 +42,61 @@ if __name__ == '__main__':
     loss_fn = nn.L1Loss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=regularization)
 
+    writer = SummaryWriter(LOG_PATH)
+    total_train_step = 0
+    total_val_step = 0
+
+    start_time = time.time()
     for t in range(epochs):
         print(f'Epoch {t + 1}\n-------------------------------')
-        train_loop(train_dataloader, model, loss_fn, optimizer, device)
-        val_loop(val_dataloader, model, loss_fn, device)
+
+        # Training loop
+        model.train()
+        size = len(train_dataloader.dataset)
+        for batch, (xy, sdf) in enumerate(train_dataloader):
+            xy, sdf = xy.to(device), sdf.to(device)
+            pred_sdf = model(xy)
+            sdf = torch.reshape(sdf, pred_sdf.shape)
+            loss = loss_fn(torch.clamp(pred_sdf, min=-delta, max=delta), torch.clamp(sdf, min=-delta, max=delta))
+
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+            if batch % 50 == 0:
+                loss, current = loss.item(), batch * len(xy)
+                print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
+
+            total_train_step += 1
+            if total_train_step % 200 == 0:
+                writer.add_scalar('Training loss', loss.item(), total_train_step)
+
+        # Evaluation loop
+        model.eval()
+        size = len(val_dataloader.dataset)
+        val_loss = 0
+
+        with torch.no_grad():
+            for xy, sdf in val_dataloader:
+                xy, sdf = xy.to(device), sdf.to(device)
+                pred_sdf = model(xy)
+                sdf = torch.reshape(sdf, pred_sdf.shape)
+                loss = loss_fn(torch.clamp(pred_sdf, min=-delta, max=delta), torch.clamp(sdf, min=-delta, max=delta))
+                val_loss += loss
+
+        val_loss /= size
+        end_time = time.time()
+        print(f'Test Error: \n Avg loss: {val_loss:>8f} \n Time: {(end_time - start_time):>12f} \n ')
+
+        total_val_step += 1
+        writer.add_scalar('Val loss', val_loss, total_val_step)
+
     torch.save(model.state_dict(), f'{MODEL_PATH}{name}.pth')
     print(f'Complete training with {epochs} epochs!')
 
+    writer.close()
+
     # Plot results
     print('Plotting results...')
-    plot_sdf(model, device, filepath=RES_PATH, filename=name, is_net=True, show=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, mask_path=MASK_PATH, is_net=True, show=False)
     print('Done!')

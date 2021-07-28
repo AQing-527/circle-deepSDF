@@ -4,16 +4,18 @@ import cv2
 import torch
 from net import SDFNet
 
-MODEL_PATH = '../models/'
-RES_PATH = '../results/trained_heatmaps/'
-
+MODEL_PATH = 'models/'
+RES_PATH = 'results/trained_heatmaps/'
+SHAPE_PATH = 'shapes/shape_images/'
 
 # Adapted from https://github.com/Oktosha/DeepSDF-explained/blob/master/deepSDF-explained.ipynb
-def plot_sdf(sdf_func, device, img_size=800, filepath='', filename='res', is_net=False, show=False):
+def plot_sdf(sdf_func, device, res_path, name, shape_path,
+             img_size=800, is_net=False, show=False):
     # Sample the 2D domain as a regular grid
-    low = -0.5
-    high = 0.5
+    low = 0
+    high = 1
     grid_size = 100
+    margin = 8e-3
 
     grid = np.linspace(low, high, grid_size + 1)
     if not is_net:
@@ -30,6 +32,14 @@ def plot_sdf(sdf_func, device, img_size=800, filepath='', filename='res', is_net
 
     sdf_map = sdf_map[:-1, :-1]
 
+    # Plot true boundary
+
+    # Plot predicted boundary
+    low_pos = sdf_map > -margin
+    high_pos = sdf_map < margin
+    edge_pos = low_pos & high_pos
+    sdf_map = np.where(edge_pos, np.max(sdf_map), sdf_map)
+
     # Scale to canvas size
     scale = int(img_size / grid_size)
     sdf_map = np.kron(sdf_map, np.ones((scale, scale)))
@@ -39,8 +49,12 @@ def plot_sdf(sdf_func, device, img_size=800, filepath='', filename='res', is_net
     heat_map = cv2.normalize(sdf_map, heat_map, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     heat_map = cv2.applyColorMap(heat_map, cv2.COLORMAP_JET)
 
-    cv2.imwrite(f'{filepath}{filename}.png', heat_map)
-    print(f'Heatmap path = {filepath}{filename}.png')
+    # Plot true boundary
+    edge = cv2.imread(f'{SHAPE_PATH}{name}.png')
+    heat_map = np.maximum(heat_map, edge)
+
+    cv2.imwrite(f'{res_path}{name}.png', heat_map)
+    print(f'Heatmap path = {res_path}{name}.png')
 
     if not show:
         return
@@ -54,6 +68,7 @@ if __name__ == '__main__':
     print('Enter shape name:')
     name = input()
 
+    print(torch.cuda.is_available(), flush=True)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f'Using {device}!')
     model = SDFNet().to(device)
@@ -64,5 +79,5 @@ if __name__ == '__main__':
         exit(-1)
 
     print('Plotting results...')
-    plot_sdf(model, device, filepath=RES_PATH, filename=name, is_net=True, show=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_path=SHAPE_PATH, is_net=True, show=False)
     print('Done!')
