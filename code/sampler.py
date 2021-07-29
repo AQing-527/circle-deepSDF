@@ -2,12 +2,12 @@ import numpy as np
 import cv2
 from renderer import plot_sdf
 
-SHAPE_PATH = 'shapes/shape/'
-SHAPE_IMAGE_PATH = 'shapes/shape_images/'
-TRAIN_DATA_PATH = 'datasets/train/'
-VAL_DATA_PATH = 'datasets/val/'
-SAMPLED_IMAGE_PATH = 'datasets/sampled_images/'
-HEATMAP_PATH = 'results/true_heatmaps/'
+SHAPE_PATH = '../shapes/shape/'
+SHAPE_IMAGE_PATH = '../shapes/shape_images/'
+TRAIN_DATA_PATH = '../datasets/train/'
+VAL_DATA_PATH = '../datasets/val/'
+SAMPLED_IMAGE_PATH = '../datasets/sampled_images/'
+HEATMAP_PATH = '../results/true_heatmaps/'
 
 CANVAS_SIZE = np.array([800, 800])  # Keep two dimensions the same
 SHAPE_COLOR = (255, 255, 255)

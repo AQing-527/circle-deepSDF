@@ -4,9 +4,9 @@ import cv2
 import torch
 from net import SDFNet
 
-MODEL_PATH = 'models/'
-RES_PATH = 'results/trained_heatmaps/'
-SHAPE_PATH = 'shapes/shape_images/'
+MODEL_PATH = '../models/'
+RES_PATH = '../results/trained_heatmaps/'
+SHAPE_PATH = '../shapes/shape_images/'
 
 # Adapted from https://github.com/Oktosha/DeepSDF-explained/blob/master/deepSDF-explained.ipynb
 def plot_sdf(sdf_func, device, res_path, name, shape_path,

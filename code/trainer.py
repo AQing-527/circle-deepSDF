@@ -9,12 +9,12 @@ from net import SDFNet
 from loader import SDFData
 from renderer import plot_sdf
 
-TRAIN_DATA_PATH = 'datasets/train/'
-VAL_DATA_PATH = 'datasets/val/'
-MODEL_PATH = 'models/'
-RES_PATH = 'results/trained_heatmaps/'
-SHAPE_PATH = 'shapes/shape_images/'
-LOG_PATH = 'logs/'
+TRAIN_DATA_PATH = '../datasets/train/'
+VAL_DATA_PATH = '../datasets/val/'
+MODEL_PATH = '../models/'
+RES_PATH = '../results/trained_heatmaps/'
+SHAPE_PATH = '../shapes/shape_images/'
+LOG_PATH = '../logs/'
 
 if __name__ == '__main__':
     batch_size = 64
@@ -98,5 +98,5 @@ if __name__ == '__main__':
 
     # Plot results
     print('Plotting results...')
-    plot_sdf(model, device, res_path=RES_PATH, name=name, mask_path=MASK_PATH, is_net=True, show=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_path=SHAPE_PATH, is_net=True, show=False)
     print('Done!')
