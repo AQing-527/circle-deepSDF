@@ -6,7 +6,7 @@ import time
 CANVAS_SIZE = (800, 800)
 SHAPE_COLOR = (255, 255, 255)
 # Customize shape name for easier identification
-SAVE_NAME = 'Circle_2'
+SAVE_NAME = 'Circle_3'
 
 
 class CircleDrawer(object):
