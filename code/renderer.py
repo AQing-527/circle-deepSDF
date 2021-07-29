@@ -10,7 +10,7 @@ RES_PATH = '../results/trained_heatmaps/'
 
 
 # Adapted from https://github.com/Oktosha/DeepSDF-explained/blob/master/deepSDF-explained.ipynb
-def plot_sdf(sdf_func, device, res_path, name, mask_path,
+def plot_sdf(sdf_func, device, res_path, name, shape_path,
              img_size=800, is_net=False, show=False):
     # Sample the 2D domain as a regular grid
     low = 0
@@ -55,7 +55,7 @@ def plot_sdf(sdf_func, device, res_path, name, mask_path,
     heat_map = cv2.applyColorMap(heat_map, cv2.COLORMAP_JET)
 
     # Plot true boundary
-    edge = cv2.imread(f'{MASK_PATH}{name}.png')
+    edge = cv2.imread(f'{SHAPE_PATH}{name}.png')
     heat_map = np.maximum(heat_map, edge)
 
     cv2.imwrite(f'{res_path}{name}.png', heat_map)
@@ -83,5 +83,5 @@ if __name__ == '__main__':
         exit(-1)
 
     print('Plotting results...')
-    plot_sdf(model, device, res_path=RES_PATH, name=name, mask_path=MASK_PATH, is_net=True, show=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_path=SHAPE_PATH, is_net=True, show=False)
     print('Done!')
