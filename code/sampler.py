@@ -163,7 +163,7 @@ class CircleSampler(object):
         if not show_image:
             return
 
-        cv2.imshow(window_name, canvas)
+        #cv2.imshow(window_name, canvas)
         cv2.waitKey()
         cv2.destroyAllWindows()
 
@@ -173,5 +173,5 @@ if __name__ == '__main__':
     shape_name = input()
     sampler = CircleSampler(shape_name, SHAPE_PATH, SHAPE_IMAGE_PATH, SAMPLED_IMAGE_PATH, TRAIN_DATA_PATH, VAL_DATA_PATH)
     print('Sampling...')
-    sampler.run(show_image=True)
+    sampler.run(show_image=False)
     print('Done!')
