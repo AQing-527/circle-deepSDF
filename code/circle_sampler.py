@@ -79,7 +79,7 @@ class CircleSampler(object):
         """
         :param m: number of points sampled on the boundary
                   each boundary point generates 2 samples
-        :param n: number of points sampled uniformly in the unit circle
+        :param n: number of points sampled uniformly in the canvas
         :param var: two Gaussian variances used to transform boundary points
         """
 

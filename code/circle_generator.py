@@ -6,9 +6,9 @@ import time
 CANVAS_SIZE = (800, 800)
 SHAPE_COLOR = (255, 255, 255)
 # Customize shape name for easier identification
-SAVE_NAME = 'Noise_Circle_1'
+SAVE_NAME = 'Noise_Circle_3'
 AMPLITUDE = 20
-POINTS_NUM = 40
+POINTS_NUM = 20
 
 class CircleDrawer(object):
     def __init__(self, window_name):
@@ -16,7 +16,7 @@ class CircleDrawer(object):
        self.x = -1
        self.y = -1
        self.radius = -1
-       self.ponits = []
+       self.points = []
 
     # (x,y) is the center of the circle
     def set_center(self, x, y):
@@ -39,21 +39,22 @@ class CircleDrawer(object):
             
              else:
                 for i in range(POINTS_NUM):
-                    self.points.append([self.x+(self.radius+AMPLITUDE)*np.cos((360/POINTS_NUM)*2*np.pi*i), self.y+(self.radius+AMPLITUDE)*np.sin((360/POINTS_NUM)*2*np.pi*i)])
-                    self.points.append([self.x+(self.radius+AMPLITUDE)*np.cos((360/POINTS_NUM)*2*np.pi*i+(180/POINTS_NUM)*2*np.pi), self.y+(self.radius+AMPLITUDE)*np.sin((360/POINTS_NUM)*2*np.pi*i(180/POINTS_NUM)*2*np.pi)])
-                cv2.polylines(canvas, pts=self.points, isClosed=True, color = SHAPE_COLOR, thickness=1)
-                cv2.imshow()
+                    self.points.append([int(self.center[0]+(self.radius+AMPLITUDE)*np.cos((2*np.pi/POINTS_NUM)*i)), int(self.center[1]+(self.radius+AMPLITUDE)*np.sin((2*np.pi/POINTS_NUM)*i))])
+                    self.points.append([int(self.center[0]+(self.radius-AMPLITUDE)*np.cos((2*np.pi/POINTS_NUM)*i+(1/POINTS_NUM)*np.pi)), int(self.center[1]+(self.radius-AMPLITUDE)*np.sin((2*np.pi/POINTS_NUM)*i+(1/POINTS_NUM)*np.pi))])
+                cv2.polylines(canvas, [np.array(self.points)], isClosed=True, color = SHAPE_COLOR, thickness=1)
+                cv2.imshow(self.window_name, canvas)
             
          # Waiting for the user to press any key
          cv2.waitKey()     
          cv2.destroyWindow(self.window_name)
-         return canvas
+         return self.points, canvas
 
 class DataSaver(object):
-    def __init__(self, x, y, radius, image):
+    def __init__(self, x, y, radius, points, image):
         self.x = x
         self.y = y
         self.radius = radius
+        self.points = points
         self.image = image
         self.data_path = '../shapes/shape/'
         self.image_path = '../shapes/shape_images/'
@@ -89,9 +90,9 @@ class DataSaver(object):
                 y = np.double(np.double(point[1]) / np.double(CANVAS_SIZE[1]))
                 f.write(f'{x} {y}\n')
                 
-                f.close()
+            f.close()
 
-                cv2.imwrite(f'{self.image_path}{self.save_name}.png', self.image)
+            cv2.imwrite(f'{self.image_path}{self.save_name}.png', self.image)
 
 
 if __name__ == '__main__':
@@ -104,12 +105,12 @@ if __name__ == '__main__':
     radius = int(input("Please enter the radius of this circle (the canvas size is 800*800): "))
     drawer.set_radius(radius)
 
-    image = drawer.run(noise=False)
+    points, image = drawer.run(noise=True)
 
-    saver = DataSaver(x, y, radius, image)
+    saver = DataSaver(x, y, radius, points, image)
     if SAVE_NAME != '':
         saver.set_save_name(SAVE_NAME)
-    saver.save(noise=False)
+    saver.save(noise=True)
     print(f'Data path = {saver.data_path}{saver.save_name}.txt')
     print(f'Image path = {saver.image_path}{saver.save_name}.png')
     print("Done!")
