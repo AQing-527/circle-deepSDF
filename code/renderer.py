@@ -11,12 +11,12 @@ RES_PATH = '../results/trained_heatmaps/'
 
 # Adapted from https://github.com/Oktosha/DeepSDF-explained/blob/master/deepSDF-explained.ipynb
 def plot_sdf(sdf_func, device, res_path, name, shape_image_path,
-             img_size=800, is_net=False, show=False):
+             img_size=800, is_net=False, show_image=False):
     # Sample the 2D domain as a regular grid
     low = 0
     high = 1
     grid_size = 100
-    margin = 8e-3
+    margin = 7e-3
     max_norm = 0.3  # Normalizing distance
 
     grid = np.linspace(low, high, grid_size + 1)
@@ -61,7 +61,7 @@ def plot_sdf(sdf_func, device, res_path, name, shape_image_path,
     cv2.imwrite(f'{res_path}{name}.png', heat_map)
     print(f'Heatmap path = {res_path}{name}.png')
 
-    if not show:
+    if not show_image:
         return
 
     cv2.imshow('SDF Map', heat_map)
@@ -83,5 +83,5 @@ if __name__ == '__main__':
         exit(-1)
 
     print('Plotting results...')
-    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_image_path=SHAPE_IMAGE_PATH, is_net=True, show=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_image_path=SHAPE_IMAGE_PATH, is_net=True, show_image=False)
     print('Done!')

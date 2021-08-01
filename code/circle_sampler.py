@@ -19,27 +19,30 @@ POINT_COLOR = (127, 127, 127)
 class Shape:
     def sdf(self, p):
         pass
-        
+
+
 class Circle(Shape):
-    
+
     def __init__(self, c, r):
         self.c = c
         self.r = r
-    
+
     def set_c(self, c):
         self.c = c
-    
+
     def set_r(self, r):
         self.r = r
 
     def sdf(self, p):
         return np.linalg.norm(p - self.c) - self.r
 
+
 # The CircleSampler class is adapted from
 # https://github.com/mintpancake/2d-sdf-net
 
 class CircleSampler(object):
-    def __init__(self, circle_name, circle_path, circle_image_path, sampled_image_path, train_data_path, val_data_path, split_ratio=0.8, show_image=False ):
+    def __init__(self, circle_name, circle_path, circle_image_path, sampled_image_path, train_data_path, val_data_path,
+                 split_ratio=0.8, show_image=False):
         self.circle_name = circle_name
 
         self.circle_path = circle_path
@@ -49,8 +52,8 @@ class CircleSampler(object):
         self.train_data_path = train_data_path
         self.val_data_path = val_data_path
 
-        self.circle = Circle([0,0],0)
-        
+        self.circle = Circle([0, 0], 0)
+
         self.sampled_data = np.array([])
         self.train_data = np.array([])
         self.val_data = np.array([])
@@ -74,7 +77,6 @@ class CircleSampler(object):
         self.circle.set_c(center)
         self.circle.set_r(radius)
 
-
     def sample(self, m=4000, n=1000, var=(0.025, 0.0025)):
         """
         :param m: number of points sampled on the boundary
@@ -94,10 +96,11 @@ class CircleSampler(object):
         boundary_points = direction + self.circle.c
 
         # Perturbing boundary points
-        noise_1 = np.random.normal(loc=0, scale=np.sqrt(var[0]), size = (boundary_points.shape[0],1))
-        noise_2 = np.random.normal(loc=0, scale=np.sqrt(var[1]), size = (boundary_points.shape[0],1))
-        gaussian_points = np.concatenate((boundary_points + direction * noise_1, boundary_points + direction * noise_2), axis=0)
-        
+        noise_1 = np.random.normal(loc=0, scale=np.sqrt(var[0]), size=(boundary_points.shape[0], 1))
+        noise_2 = np.random.normal(loc=0, scale=np.sqrt(var[1]), size=(boundary_points.shape[0], 1))
+        gaussian_points = np.concatenate((boundary_points + direction * noise_1, boundary_points + direction * noise_2),
+                                         axis=0)
+
         # Merge uniform and Gaussian points
         sampled_points = np.concatenate((uniform_points, gaussian_points), axis=0)
         self.sampled_data = self.calculate_sdf(sampled_points)
@@ -143,8 +146,8 @@ class CircleSampler(object):
         scaled_center = np.around(self.circle.c * CANVAS_SIZE).astype(int)
         # assume we always use square canvas
         scaled_radius = np.around(self.circle.r * CANVAS_SIZE[0]).astype(int)
-        cv2.circle(canvas, scaled_center, scaled_radius, SHAPE_COLOR, thickness = 1)
-        
+        cv2.circle(canvas, scaled_center, scaled_radius, SHAPE_COLOR, thickness=1)
+
         # Draw points
         for i, datum in enumerate(self.sampled_data):
             point = np.around(datum[:2] * CANVAS_SIZE).astype(int)
@@ -154,7 +157,8 @@ class CircleSampler(object):
                 cv2.circle(canvas, point, radius, POINT_COLOR)
 
         # Plot_sdf
-        plot_sdf(self.circle.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.circle_name, shape_path=SHAPE_IMAGE_PATH, is_net=False, show=False)
+        plot_sdf(self.circle.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.circle_name, shape_path=SHAPE_IMAGE_PATH,
+                 is_net=False, show=False)
 
         # Store and show
         cv2.imwrite(f'{self.sampled_image_path}{save_name}.png', canvas)
@@ -163,7 +167,7 @@ class CircleSampler(object):
         if not show_image:
             return
 
-        #cv2.imshow(window_name, canvas)
+        # cv2.imshow(window_name, canvas)
         cv2.waitKey()
         cv2.destroyAllWindows()
 
@@ -171,7 +175,8 @@ class CircleSampler(object):
 if __name__ == '__main__':
     print('Enter shape name:')
     shape_name = input()
-    sampler = CircleSampler(shape_name, SHAPE_PATH, SHAPE_IMAGE_PATH, SAMPLED_IMAGE_PATH, TRAIN_DATA_PATH, VAL_DATA_PATH)
+    sampler = CircleSampler(shape_name, SHAPE_PATH, SHAPE_IMAGE_PATH, SAMPLED_IMAGE_PATH, TRAIN_DATA_PATH,
+                            VAL_DATA_PATH)
     print('Sampling...')
     sampler.run(show_image=False)
     print('Done!')

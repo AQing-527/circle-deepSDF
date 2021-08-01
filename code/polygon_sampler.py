@@ -58,7 +58,8 @@ class Polygon(object):
 
 
 class ShapeSampler(object):
-    def __init__(self, shape_name, shape_path, train_data_path, val_data_path, sampled_image_path, split_ratio=0.8, show_image=False):
+    def __init__(self, shape_name, shape_path, train_data_path, val_data_path, sampled_image_path, split_ratio=0.8,
+                 show_image=False):
         """
         :param split_ratio: train / (train + val)
         :param show_image: Launch a windows showing sampled image
@@ -95,8 +96,7 @@ class ShapeSampler(object):
         f.close()
         self.shape.set_v(np.array(vertices, dtype=np.double))
 
-      
-    def sample(self, m=4000, n=1000, var=(0.0025, 0.00025)):
+    def sample(self, m=5000, n=2000, var=(0.0025, 0.00025)):
         """
         :param m: number of points sampled on the boundary
                   each boundary point generates 2 samples
@@ -155,7 +155,6 @@ class ShapeSampler(object):
         plot_sdf(self.shape.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.shape_name, shape_image_path=SHAPE_IMAGE_PATH,
                  is_net=False, show=False)
 
-
     def calculate_sdf(self, points):
         if self.shape.num == 0:
             return
@@ -187,7 +186,7 @@ class ShapeSampler(object):
         canvas = np.zeros(CANVAS_SIZE, np.uint8)
         # Draw polygon
         scaled_v = np.around(self.shape.v * CANVAS_SIZE).astype(int)
-        cv2.polylines(canvas, [scaled_v], isClosed=True, color = SHAPE_COLOR, thickness=1)
+        cv2.polylines(canvas, [scaled_v], isClosed=True, color=SHAPE_COLOR, thickness=1)
         # Draw points
         for i, datum in enumerate(self.sampled_data):
             point = np.around(datum[:2] * CANVAS_SIZE).astype(int)

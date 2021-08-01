@@ -13,7 +13,7 @@ TRAIN_DATA_PATH = '../datasets/train/'
 VAL_DATA_PATH = '../datasets/val/'
 MODEL_PATH = '../models/'
 RES_PATH = '../results/trained_heatmaps/'
-SHAPE_PATH = '../shapes/shape_images/'
+SHAPE_IMAGE_PATH = '../shapes/shape_images/'
 LOG_PATH = '../logs/'
 
 if __name__ == '__main__':
@@ -33,6 +33,7 @@ if __name__ == '__main__':
     val_dataloader = DataLoader(val_data, batch_size=batch_size, shuffle=True)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(torch.cuda.is_available(), flush=True)
     print(f'Using {device}!')
 
     model = SDFNet().to(device)
@@ -98,5 +99,5 @@ if __name__ == '__main__':
 
     # Plot results
     print('Plotting results...')
-    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_path=SHAPE_PATH, is_net=True, show=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_image_path=SHAPE_IMAGE_PATH, is_net=True, show=False)
     print('Done!')
