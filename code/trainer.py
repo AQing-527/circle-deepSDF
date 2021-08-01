@@ -65,8 +65,8 @@ if __name__ == '__main__':
             optimizer.zero_grad()
 
             if batch % 50 == 0:
-                loss, current = loss.item(), batch * len(xy)
-                print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
+                loss_num, current = loss.item(), batch * len(xy)
+                print(f'loss: {loss_num:>7f}  [{current:>5d}/{size:>5d}]')
 
             total_train_step += 1
             if total_train_step % 200 == 0:
@@ -99,5 +99,5 @@ if __name__ == '__main__':
 
     # Plot results
     print('Plotting results...')
-    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_image_path=SHAPE_IMAGE_PATH, is_net=True, show=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_image_path=SHAPE_IMAGE_PATH, is_net=True, show_image=False)
     print('Done!')

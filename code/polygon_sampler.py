@@ -108,9 +108,11 @@ class ShapeSampler(object):
             return
 
         # Do uniform sampling
-        x = np.random.uniform(0, 1, size=(n, 1))
-        y = np.random.uniform(0, 1, size=(n, 1))
-        uniform_points = np.concatenate((x, y), axis=1)
+        # Use polar coordinate
+        r = np.random.uniform(0, 0.5, size=(n, 1))
+        t = np.random.uniform(0, 2 * np.pi, size=(n, 1))
+        # Transform to Cartesian coordinate
+        uniform_points = np.concatenate((0.5 + r * np.cos(t), 0.5 + r * np.sin(t)), axis=1)
 
         # Do Gaussian sampling
         # Distribute points to each edge weighted by length
@@ -153,7 +155,7 @@ class ShapeSampler(object):
 
         # Plot_sdf
         plot_sdf(self.shape.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.shape_name, shape_image_path=SHAPE_IMAGE_PATH,
-                 is_net=False, show=False)
+                 is_net=False, show_image=False)
 
     def calculate_sdf(self, points):
         if self.shape.num == 0:
@@ -191,7 +193,7 @@ class ShapeSampler(object):
         for i, datum in enumerate(self.sampled_data):
             point = np.around(datum[:2] * CANVAS_SIZE).astype(int)
             cv2.circle(canvas, point, 1, POINT_COLOR, -1)
-            if i % 50 == 0:
+            if i % 200 == 0:
                 radius = np.abs(np.around(datum[2] * CANVAS_SIZE[0]).astype(int))
                 cv2.circle(canvas, point, radius, POINT_COLOR)
 
