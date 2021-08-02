@@ -5,8 +5,8 @@ import time
 CANVAS_SIZE = (800, 800)
 SHAPE_COLOR = (255, 255, 255)
 # Customize shape name for easier identification
-SAVE_NAME = 'Noise_Circle_15_40'
-POINTS_NUM = 15
+SAVE_NAME = 'Noise_Circle_13_40'
+POINTS_NUM = 13
 AMPLITUDE = 40
 
 
