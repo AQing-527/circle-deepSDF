@@ -19,7 +19,7 @@ LOG_PATH = '../logs/'
 if __name__ == '__main__':
     batch_size = 64
     learning_rate = 1e-5
-    epochs = 1000
+    epochs = 10000
     regularization = 0  # Default: 1e-2
     delta = 0.1  # Truncated distance
 
