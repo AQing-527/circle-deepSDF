@@ -20,11 +20,10 @@ if __name__ == '__main__':
     batch_size = 10000
     learning_rate = 1e-5
     epochs = 100
-    curr_iterations = '10'
+    curr_iterations = '0'
     show_frequency = 10
     regularization = 0  # Default: 1e-2
     delta = 0.1  # Truncated distance
-
 
     print('Enter shape name:')
     name = input()
@@ -44,7 +43,7 @@ if __name__ == '__main__':
         model.load_state_dict(torch.load(f'{MODEL_PATH}{name}_{curr_iterations}.pth'))
 
     loss_fn = nn.L1Loss().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=regularization)
+    optimizer = torch.optim.LBFGS(model.parameters(), lr=learning_rate)
     # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 250, gamma=0.1, last_epoch=-1)
 
     writer = SummaryWriter(LOG_PATH)
@@ -61,25 +60,30 @@ if __name__ == '__main__':
         train_loss = 0
         for batch, (xy, sdf) in enumerate(train_dataloader):
             xy, sdf = xy.to(device), sdf.to(device)
-            predicted_sdf = model(xy)
-            sdf = torch.reshape(sdf, predicted_sdf.shape)
-            loss = loss_fn(torch.clamp(predicted_sdf, min=-delta, max=delta), torch.clamp(sdf, min=-delta, max=delta))
-            train_loss = loss.item()
 
-            loss.backward()
-            optimizer.step()
-            optimizer.zero_grad()
+            def closure():
+                optimizer.zero_grad()
+                predicted_sdf = model(xy)
+                sdf = torch.reshape(sdf, predicted_sdf.shape)
+                loss = loss_fn(torch.clamp(predicted_sdf, min=-delta, max=delta),
+                               torch.clamp(sdf, min=-delta, max=delta))
+                train_loss += loss.item()
+                loss.backward()
+                return loss
+
+
+            optimizer.step(closure=closure)
 
             if batch % 1 == 0:
-                loss_num, current = loss.item(), batch * len(xy)
-                print(f'loss: {loss_num:>7f}  [{current:>5d}/{size:>5d}]')
+                # loss_num, current = loss.item(), batch * len(xy)
+                print(f'{train_loss/size}')
 
             # total_train_step += 1
             # if total_train_step % 200 == 0:
             # writer.add_scalar('Training loss', loss.item(), total_train_step)
         total_train_step += 1
         train_loss /= size
-        writer.add_scalar('Training loss', train_loss, total_train_step+int(curr_iterations))
+        writer.add_scalar('Training loss', train_loss, total_train_step + int(curr_iterations))
 
         # Evaluation loop
         model.eval()
@@ -91,7 +95,8 @@ if __name__ == '__main__':
                 xy, sdf = xy.to(device), sdf.to(device)
                 predicted_sdf = model(xy)
                 sdf = torch.reshape(sdf, predicted_sdf.shape)
-                loss = loss_fn(torch.clamp(predicted_sdf, min=-delta, max=delta), torch.clamp(sdf, min=-delta, max=delta))
+                loss = loss_fn(torch.clamp(predicted_sdf, min=-delta, max=delta),
+                               torch.clamp(sdf, min=-delta, max=delta))
                 val_loss += loss.item()
 
         val_loss /= size
@@ -99,12 +104,12 @@ if __name__ == '__main__':
         print(f'Test Error: \n Avg loss: {val_loss:>8f} \n Time: {(end_time - start_time):>12f} \n ')
 
         total_val_step += 1
-        writer.add_scalar('Val loss', val_loss, total_val_step+int(curr_iterations))
+        writer.add_scalar('Val loss', val_loss, total_val_step + int(curr_iterations))
 
         # scheduler.step()
 
-        if (t+1) % show_frequency == 0:
-            curr_name = name + '_' + str(t+1+int(curr_iterations))
+        if (t + 1) % show_frequency == 0:
+            curr_name = name + '_' + str(t + 1 + int(curr_iterations))
             torch.save(model.state_dict(), f'{MODEL_PATH}{curr_name}.pth')
             plot_sdf(model, device, res_path=RES_PATH, name=name, store_name=curr_name, is_net=True,
                      show_image=False)

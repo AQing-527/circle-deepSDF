@@ -77,7 +77,7 @@ class CircleSampler(object):
         self.circle.set_c(center)
         self.circle.set_r(radius)
 
-    def sample(self, m=4000, n=1000, var=(0.025, 0.0025)):
+    def sample(self, m=5000, n=2000, var=(0.025, 0.0025)):
         """
         :param m: number of points sampled on the boundary
                   each boundary point generates 2 samples
@@ -86,9 +86,11 @@ class CircleSampler(object):
         """
 
         # Do uniform sampling
-        x = np.random.uniform(0, 1, size=(n, 1))
-        y = np.random.uniform(0, 1, size=(n, 1))
-        uniform_points = np.concatenate((x, y), axis=1)
+        # Use polar coordinate
+        r = np.random.uniform(0, 0.5, size=(n, 1))
+        t = np.random.uniform(0, 2 * np.pi, size=(n, 1))
+        # Transform to Cartesian coordinate
+        uniform_points = np.concatenate((0.5 + r * np.cos(t), 0.5 + r * np.sin(t)), axis=1)
 
         # Do Gaussian sampling
         t = np.random.uniform(0, 2 * np.pi, size=(m, 1))
@@ -152,13 +154,13 @@ class CircleSampler(object):
         for i, datum in enumerate(self.sampled_data):
             point = np.around(datum[:2] * CANVAS_SIZE).astype(int)
             cv2.circle(canvas, point, 1, POINT_COLOR, -1)
-            if i % 50 == 0:
-                radius = np.abs(np.around(datum[2] * CANVAS_SIZE[0]).astype(int))
-                cv2.circle(canvas, point, radius, POINT_COLOR)
+            # if i % 50 == 0:
+            #     radius = np.abs(np.around(datum[2] * CANVAS_SIZE[0]).astype(int))
+            #     cv2.circle(canvas, point, radius, POINT_COLOR)
 
         # Plot_sdf
-        plot_sdf(self.circle.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.circle_name, shape_path=SHAPE_IMAGE_PATH,
-                 is_net=False, show=False)
+        plot_sdf(self.circle.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.circle_name, shape_image_path=SHAPE_IMAGE_PATH,
+                 is_net=False)
 
         # Store and show
         cv2.imwrite(f'{self.sampled_image_path}{save_name}.png', canvas)

@@ -38,8 +38,7 @@ class TrueRenderer(object):
 
     def plot(self):
         # Plot_sdf
-        plot_sdf(self.circle.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.circle_name, shape_path=SHAPE_IMAGE_PATH,
-                 is_net=False, show=False)
+        plot_sdf(self.circle.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.circle_name, store_name = self.circle_name)
 
 
 if __name__ == '__main__':

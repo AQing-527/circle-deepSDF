@@ -154,7 +154,7 @@ class ShapeSampler(object):
         self.val_data = self.sampled_data[rest]
 
         # Plot_sdf
-        plot_sdf(self.shape.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.shape_name, shape_image_path=SHAPE_IMAGE_PATH,
+        plot_sdf(self.shape.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.shape_name, store_name=self.shape_name,
                  is_net=False, show_image=False)
 
     def calculate_sdf(self, points):
@@ -193,9 +193,9 @@ class ShapeSampler(object):
         for i, datum in enumerate(self.sampled_data):
             point = np.around(datum[:2] * CANVAS_SIZE).astype(int)
             cv2.circle(canvas, point, 1, POINT_COLOR, -1)
-            if i % 200 == 0:
-                radius = np.abs(np.around(datum[2] * CANVAS_SIZE[0]).astype(int))
-                cv2.circle(canvas, point, radius, POINT_COLOR)
+            # if i % 200 == 0:
+            #     radius = np.abs(np.around(datum[2] * CANVAS_SIZE[0]).astype(int))
+            #     cv2.circle(canvas, point, radius, POINT_COLOR)
 
         # Store and show
         cv2.imwrite(f'{self.sampled_image_path}{save_name}.png', canvas)

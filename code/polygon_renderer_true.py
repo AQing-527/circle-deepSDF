@@ -38,8 +38,7 @@ class PolygonTrueRenderer(object):
 
     def plot(self):
         # Plot_sdf
-        plot_sdf(self.shape.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.polygon_name,
-                 shape_image_path=SHAPE_IMAGE_PATH,
+        plot_sdf(self.shape.sdf, 'cpu', res_path=HEATMAP_PATH, name=self.polygon_name, store_name = self.polygon_name,
                  is_net=False, show_image=False)
 
 

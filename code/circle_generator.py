@@ -5,8 +5,8 @@ import time
 CANVAS_SIZE = (800, 800)
 SHAPE_COLOR = (255, 255, 255)
 # Customize shape name for easier identification
-SAVE_NAME = 'Noise_Circle_13_40'
-POINTS_NUM = 13
+SAVE_NAME = 'Noise_Circle_2'
+POINTS_NUM = 15
 AMPLITUDE = 40
 
 
@@ -79,11 +79,11 @@ class DataSaver(object):
         f = open(f'{self.data_path}{self.save_name}.txt', 'w')
         if not noise:
             # Normalize (x,y) and radius to (0,1)
-            x = self.x / CANVAS_SIZE[0]
-            y = self.y / CANVAS_SIZE[1]
+            x_ = self.x / CANVAS_SIZE[0]
+            y_ = self.y / CANVAS_SIZE[1]
             # assume we always use square canvas
             radius = self.radius / CANVAS_SIZE[0]
-            f.write(f'{x} {y} {radius}\n')
+            f.write(f'{x_} {y_} {radius}\n')
 
             f.close()
 

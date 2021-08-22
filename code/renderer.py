@@ -2,7 +2,7 @@ import os
 import numpy as np
 import cv2
 import torch
-from net import SDFNet
+from net4_512 import SDFNet
 
 MODEL_PATH = '../models/'
 SHAPE_IMAGE_PATH = '../shapes/shape_images/'
@@ -10,12 +10,12 @@ RES_PATH = '../results/trained_heatmaps/'
 
 
 # Adapted from https://github.com/Oktosha/DeepSDF-explained/blob/master/deepSDF-explained.ipynb
-def plot_sdf(sdf_func, device, res_path, name, shape_image_path,
+def plot_sdf(sdf_func, device, res_path, name, store_name,
              img_size=800, is_net=False, show_image=False):
     # Sample the 2D domain as a regular grid
     low = 0
     high = 1
-    grid_size = 100
+    grid_size = 800
     margin = 7e-3
     max_norm = 0.3  # Normalizing distance
 
@@ -58,8 +58,8 @@ def plot_sdf(sdf_func, device, res_path, name, shape_image_path,
     edge = cv2.imread(f'{SHAPE_IMAGE_PATH}{name}.png')
     heat_map = np.maximum(heat_map, edge)
 
-    cv2.imwrite(f'{res_path}{name}.png', heat_map)
-    print(f'Heatmap path = {res_path}{name}.png')
+    cv2.imwrite(f'{res_path}{store_name}.png', heat_map)
+    print(f'Heatmap path = {res_path}{store_name}.png')
 
     if not show_image:
         return
@@ -83,5 +83,5 @@ if __name__ == '__main__':
         exit(-1)
 
     print('Plotting results...')
-    plot_sdf(model, device, res_path=RES_PATH, name=name, shape_image_path=SHAPE_IMAGE_PATH, is_net=True, show_image=False)
+    plot_sdf(model, device, res_path=RES_PATH, name=name, store_name=name, is_net=True, show_image=False)
     print('Done!')
