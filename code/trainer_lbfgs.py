@@ -62,6 +62,7 @@ if __name__ == '__main__':
             xy, sdf = xy.to(device), sdf.to(device)
 
             def closure():
+                global xy, sdf, train_loss
                 optimizer.zero_grad()
                 predicted_sdf = model(xy)
                 sdf = torch.reshape(sdf, predicted_sdf.shape)
