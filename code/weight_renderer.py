@@ -39,8 +39,11 @@ def plot_weight(pth_data_path, save_path, shape_name, diff):
                 k1, v1 = items1[i]
                 k2, v2 = items2[i]
                 v1 = v1.cpu().numpy()
+                # print(v1, flush=True)
                 v2 = v2.cpu().numpy()
+                # print(v2, flush=True)
                 result = v1 - v2
+                # print(result, flush=True)
                 max_norm = np.max(np.abs(result))
                 heat_map = result / max_norm * 127.5 + 127.5
                 heat_map = np.uint8(heat_map)
@@ -54,7 +57,7 @@ def plot_weight(pth_data_path, save_path, shape_name, diff):
 
 
 if __name__ == '__main__':
-    difference = False
+    difference = True
     name = []
     print('Enter shape name:')
     name.append(input())

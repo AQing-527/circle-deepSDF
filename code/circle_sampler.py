@@ -148,7 +148,7 @@ class CircleSampler(object):
         scaled_center = np.around(self.circle.c * CANVAS_SIZE).astype(int)
         # assume we always use square canvas
         scaled_radius = np.around(self.circle.r * CANVAS_SIZE[0]).astype(int)
-        cv2.circle(canvas, scaled_center, scaled_radius, SHAPE_COLOR, thickness=1)
+        cv2.circle(canvas, scaled_center, scaled_radius, SHAPE_COLOR, thickness=2)
 
         # Draw points
         for i, datum in enumerate(self.sampled_data):

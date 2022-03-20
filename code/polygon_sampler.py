@@ -188,7 +188,7 @@ class ShapeSampler(object):
         canvas = np.zeros(CANVAS_SIZE, np.uint8)
         # Draw polygon
         scaled_v = np.around(self.shape.v * CANVAS_SIZE).astype(int)
-        cv2.polylines(canvas, [scaled_v], isClosed=True, color=SHAPE_COLOR, thickness=1)
+        cv2.polylines(canvas, [scaled_v], isClosed=True, color=SHAPE_COLOR, thickness=2)
         # Draw points
         for i, datum in enumerate(self.sampled_data):
             point = np.around(datum[:2] * CANVAS_SIZE).astype(int)

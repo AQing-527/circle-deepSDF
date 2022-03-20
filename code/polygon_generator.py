@@ -5,7 +5,7 @@ import time
 CANVAS_SIZE = (800, 800)
 SHAPE_COLOR = (255, 255, 255)
 # Customize shape name for easier identification
-SAVE_NAME = 'Shape6'
+SAVE_NAME = ''
 
 
 class PolygonDrawer(object):
@@ -38,7 +38,7 @@ class PolygonDrawer(object):
             self.points.append(
                 [int(self.center[0] + self.radius * np.sin((np.pi / self.v_num) + (2 * np.pi / self.v_num) * i)),
                  int(self.center[1] + self.radius * np.cos((np.pi / self.v_num) +(2 * np.pi / self.v_num) * i))])
-        cv2.polylines(canvas, [np.array(self.points)], isClosed=True, color=SHAPE_COLOR, thickness=1)
+        cv2.polylines(canvas, [np.array(self.points)], isClosed=True, color=SHAPE_COLOR, thickness=2)
         cv2.imshow(self.window_name, canvas)
 
         # Waiting for the user to press any key
@@ -81,14 +81,14 @@ class DataSaver(object):
 
 
 if __name__ == '__main__':
-    drawer = PolygonDrawer('press any key to exit and store this circle')
+    drawer = PolygonDrawer('press any key to exit and store this polygon')
     x, y = input(
-        "Please enter the x, y coordinates of the center of this circle (the canvas size is 800*800): ").split()
+        "Please enter the x, y coordinates of the center of this polygon (the canvas size is 800*800): ").split()
     x = int(x)
     y = int(y)
     drawer.set_center(x, y)
 
-    radius = int(input("Please enter the radius of this circle (the canvas size is 800*800): "))
+    radius = int(input("Please enter the radius of this polygon (the canvas size is 800*800): "))
     drawer.set_radius(radius)
 
     v_num = int(input("Please enter the number of vertices (the canvas size is 800*800): "))

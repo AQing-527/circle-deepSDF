@@ -34,7 +34,7 @@ class CircleDrawer(object):
         if (self.center[0] > 0 and self.center[1] > 0 and radius > 0):
             if (noise == False):
                 # generate the circle using the input parameters
-                cv2.circle(canvas, self.center, self.radius, SHAPE_COLOR, thickness=1)
+                cv2.circle(canvas, self.center, self.radius, SHAPE_COLOR, thickness=2)
                 cv2.imshow(self.window_name, canvas)
 
             else:
@@ -46,7 +46,7 @@ class CircleDrawer(object):
                         (2 * np.pi / POINTS_NUM) * i + (1 / POINTS_NUM) * np.pi)), int(
                         self.center[1] + (self.radius - AMPLITUDE) * np.sin(
                             (2 * np.pi / POINTS_NUM) * i + (1 / POINTS_NUM) * np.pi))])
-                cv2.polylines(canvas, [np.array(self.points)], isClosed=True, color=SHAPE_COLOR, thickness=1)
+                cv2.polylines(canvas, [np.array(self.points)], isClosed=True, color=SHAPE_COLOR, thickness=2)
                 cv2.imshow(self.window_name, canvas)
 
         # Waiting for the user to press any key
