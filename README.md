@@ -3,4 +3,5 @@ A single shape DeepSDF for circles, including the process of generation, samplin
 
 ![image](imgs/Presentation_The_expressiveness_of_neural_implicit_2D_shapes_02.jpg)
 
+<img src="imgs/Presentation_The_expressiveness_of_neural_implicit_2D_shapes_02.jpg" width=600px>
 
